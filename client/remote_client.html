@@ -419,12 +419,12 @@
             const touchpad = document.getElementById('touchpad');
             let lastTouchX = null;
             let lastTouchY = null;
-            let firstTouchX = null;
-            let firstTouchY = null;
+            // let firstTouchX = null;
+            // let firstTouchY = null;
             const sensitivity = 2.5; // Adjust this value to change mouse movement speed
             let count = 0; // 用于节流的计时器变量
             const DIVIDER = 5; 
-            const CLICK_THRESHOLD = 5; // Pixels: Max movement allowed for a click
+            // const CLICK_THRESHOLD = 5; // Pixels: Max movement allowed for a click
 
             touchpad.addEventListener('touchstart', (e) => {
                 e.preventDefault(); // Prevent scrolling/zooming on the touchpad area
@@ -432,8 +432,8 @@
                     count ++;
                     lastTouchX = e.touches[0].clientX;
                     lastTouchY = e.touches[0].clientY;
-                    firstTouchX = e.touches[0].clientX;
-                    firstTouchY = e.touches[0].clientY;
+                    // firstTouchX = e.touches[0].clientX;
+                    // firstTouchY = e.touches[0].clientY;
                     touchpad.classList.add('active'); // Visual feedback
                 }
             });
@@ -466,17 +466,17 @@
                 console.log('Pad touch end222 pad click');
                 lastTouchX = null;
                 lastTouchY = null;
-                const finalTouchX = e.changedTouches[0].clientX;
-                const finalTouchY = e.changedTouches[0].clientY;
-                // make a shortcut calculation for reducing cpu working
-                const distance = Math.abs(finalTouchX - initialTouchX) +
-                    Math.abs(finalTouchY - initialTouchY);
+                // const finalTouchX = e.changedTouches[0].clientX;
+                // const finalTouchY = e.changedTouches[0].clientY;
+                // // make a shortcut calculation for reducing cpu working
+                // const distance = Math.abs(finalTouchX - initialTouchX) +
+                //     Math.abs(finalTouchY - initialTouchY);
 
-                if (distance < CLICK_THRESHOLD) {
-                    // It's a click! Send a click command.
-                    sendCommand('click', {}); // No x, y needed for click, PyAutoGUI clicks current pos
-                    logMessage('Touchpad: Click detected.', 'info');
-                }
+                // if (distance < CLICK_THRESHOLD) {
+                //     // It's a click! Send a click command.
+                //     sendCommand('click', {}); // No x, y needed for click, PyAutoGUI clicks current pos
+                //     logMessage('Touchpad: Click detected.', 'info');
+                // }
                 touchpad.classList.remove('active'); // Remove visual feedback
             });
 
