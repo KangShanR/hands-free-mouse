@@ -118,6 +118,69 @@
             background-color: #dbe4e6; /* Slightly darker when active */
         }
 
+
+        /* NEW: Switch styles */
+        .switch-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            gap: 10px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 100px;
+            height: 60px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 54px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 46px;
+            width: 46px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
+
+        input:checked + .slider:before {
+            -webkit-transform: translateX(36px);
+            -ms-transform: translateX(36px);
+            transform: translateX(36px);
+        }
+
     </style>
 </head>
 <body>
@@ -219,7 +282,15 @@
         </div>
         <hr>
 
-        <h2>Touchpad:</h2>
+        <!-- <h2>Touchpad:</h2> -->
+         <div class="switch-container">
+            <span>Mouse Mode</span>
+            <label class="switch">
+                <input type="checkbox" id="touchpadModeSwitch">
+                <span class="slider"></span>
+            </label>
+            <span>Array Mode (Arrows)</span>
+        </div>
         <div id="touchpad">
             <p>Touch and drag here to move mouse</p>
         </div>
@@ -278,6 +349,7 @@
         const disconnectBtn = document.getElementById('disconnectBtn');
         const serverIpInput = document.getElementById('serverIp');
         const serverPortInput = document.getElementById('serverPort');
+        const touchpadModeSwitch = document.getElementById('touchpadModeSwitch');
 
         function logMessage(msg, type = 'info') {
             const p = document.createElement('p');
@@ -407,12 +479,31 @@
             const touchpad = document.getElementById('touchpad');
             let lastTouchX = null;
             let lastTouchY = null;
-            // let firstTouchX = null;
-            // let firstTouchY = null;
+            let firstTouchX = null;
+            let firstTouchY = null;
             const sensitivity = 2.5; // Adjust this value to change mouse movement speed
             let count = 0; // 用于节流的计时器变量
             const DIVIDER = 5; 
             // const CLICK_THRESHOLD = 5; // Pixels: Max movement allowed for a click
+
+            // Event listener for the mode switch
+            touchpadModeSwitch.addEventListener('change', () => {
+                isArrayMode = touchpadModeSwitch.checked;
+                const message = isArrayMode ? 'Array Mode Activated.' : 'Mouse Mode Activated.';
+                logMessage('Touchpad: ' + message, 'info');
+
+                // Clear any ongoing touch states when switching modes
+                cancelAnimationFrame(animationFrameId); 
+                animationFrameId = null;
+                initialTouchX = null; 
+                initialTouchY = null;
+                lastTouchX = null;
+                lastTouchY = null;
+                touchpad._lastSentX = null;
+                touchpad._lastSentY = null;
+                touchpad.classList.remove('active');
+            });
+
 
             touchpad.addEventListener('touchstart', (e) => {
                 e.preventDefault(); // Prevent scrolling/zooming on the touchpad area
@@ -420,15 +511,16 @@
                     count ++;
                     lastTouchX = e.touches[0].clientX;
                     lastTouchY = e.touches[0].clientY;
-                    // firstTouchX = e.touches[0].clientX;
-                    // firstTouchY = e.touches[0].clientY;
+                    firstTouchX = e.touches[0].clientX;
+                    firstTouchY = e.touches[0].clientY;
                     touchpad.classList.add('active'); // Visual feedback
                 }
             });
 
             touchpad.addEventListener('touchmove', (e) => {
                 e.preventDefault(); // Prevent scrolling/zooming on the touchpad area
-                if (e.touches.length === 1 && lastTouchX !== null) {
+                if (e.touches.length === 1 && lastTouchX !== null && 
+                        !touchpadModeSwitch.checked) {
                     count ++;
                     if(count % DIVIDER === 0){
                         const currentTouchX = e.touches[0].clientX;
@@ -451,20 +543,31 @@
 
             touchpad.addEventListener('touchend', (e) => {
                 e.preventDefault(); // Prevent default touch behavior
-                console.log('Pad touch end222 pad click');
                 lastTouchX = null;
                 lastTouchY = null;
-                // const finalTouchX = e.changedTouches[0].clientX;
-                // const finalTouchY = e.changedTouches[0].clientY;
-                // // make a shortcut calculation for reducing cpu working
-                // const distance = Math.abs(finalTouchX - initialTouchX) +
-                //     Math.abs(finalTouchY - initialTouchY);
+                const finalTouchX = e.changedTouches[0].clientX;
+                const finalTouchY = e.changedTouches[0].clientY;
 
-                // if (distance < CLICK_THRESHOLD) {
-                //     // It's a click! Send a click command.
-                //     sendCommand('click', {}); // No x, y needed for click, PyAutoGUI clicks current pos
-                //     logMessage('Touchpad: Click detected.', 'info');
-                // }
+                const deltaX = finalTouchX - firstTouchX;
+                const deltaY = finalTouchY - firstTouchY;
+                // Determine primary direction of swipe
+                if (Math.abs(deltaX) > Math.abs(deltaY)) { // Horizontal swipe
+                    if (deltaX > 0) {
+                        sendCommand('press', { key: 'right' });
+                        logMessage('Array Mode: Swiped Right (Arrow Right)', 'info');
+                    } else {
+                        sendCommand('press', { key: 'left' });
+                        logMessage('Array Mode: Swiped Left (Arrow Left)', 'info');
+                    }
+                } else { // Vertical swipe
+                    if (deltaY > 0) {
+                        sendCommand('press', { key: 'down' });
+                        logMessage('Array Mode: Swiped Down (Arrow Down)', 'info');
+                    } else {
+                        sendCommand('press', { key: 'up' });
+                        logMessage('Array Mode: Swiped Up (Arrow Up)', 'info');
+                    }
+                }
                 touchpad.classList.remove('active'); // Remove visual feedback
             });
 
