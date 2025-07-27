@@ -41,7 +41,8 @@ async def handle_message(websocket):
                         pyautogui.click(x, y)
                         response_message = {"status": "success", "message": f"Clicked at ({x}, {y})."}
                     else:
-                        response_message = {"status": "error", "message": "Click command requires 'x' and 'y' arguments."}
+                        pyautogui.click()
+                        response_message = {"status": "success", "message": f"Clicked at current position."}
                 elif command == 'rightclick':
                     x = args.get('x')
                     y = args.get('y')
