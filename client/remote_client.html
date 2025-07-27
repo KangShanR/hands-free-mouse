@@ -227,20 +227,8 @@
 
         <div class="input-group">
             <div class="input-fields">
-                <label>X:</label><input type="number" id="clickX" value="2048">
-                <label>Y:</label><input type="number" id="clickY" value="1080">
-            </div>
-            <div class="input-fields">
-                <button onclick="sendCommand('moveto', {x: parseInt(document.getElementById('clickX').value), 
-                        y: parseInt(document.getElementById('clickY').value)})">🎯</button>
-                <button onclick="sendCommand('move', {x: parseInt(document.getElementById('clickX').value), 
-                y: parseInt(document.getElementById('clickY').value)})">🏹</button>
-            </div>
-            <div class="input-fields">
-                <button onclick="sendCommand('click', {x: parseInt(document.getElementById('clickX').value),
-                        y: parseInt(document.getElementById('clickY').value)})">📌</button>
-                <button onclick="sendCommand('rightclick', {x: parseInt(document.getElementById('clickX').value),
-                        y: parseInt(document.getElementById('clickY').value)})">⏳</button>
+                <button onclick="sendCommand('click', {})">📌</button>
+                <button onclick="sendCommand('rightclick', {})">⏳</button>
             </div>
         </div>
         <hr>
