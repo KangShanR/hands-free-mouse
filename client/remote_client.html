@@ -426,40 +426,6 @@
         // 尝试自动填充当前网页所在的主机IP，方便本地测试
         serverIpInput.value = "192.168.8.129"; 
 
-
-        // Object to keep track of pressed toggle keys
-        const pressedToggleKeys = {}; // Stores { 'ctrl': true, 'alt': false, ... }
-
-        // ... (inside DOMContentLoaded listener) ...
-
-        const toggleKeyButtons = document.querySelectorAll('.toggle-key');
-
-        toggleKeyButtons.forEach(button => {
-            const key = button.dataset.key; // Get the key name from data-key attribute
-            pressedToggleKeys[key] = false; // Initialize state for each key as "up"
-
-            button.addEventListener('click', function() {
-                if (!ws || ws.readyState !== WebSocket.OPEN) {
-                    logMessage('Not connected to server. Please connect first to toggle keys.', 'error');
-                    return;
-                }
-
-                if (pressedToggleKeys[key]) {
-                    // Key is currently "down", so send keyup
-                    sendCommand('keyup', { key: key });
-                    this.classList.remove('key-down'); // Remove visual "down" state
-                    logMessage(`KeyUp: ${key}`, 'sent');
-                    pressedToggleKeys[key] = false;
-                } else {
-                    // Key is currently "up", so send keydown
-                    sendCommand('keydown', { key: key });
-                    this.classList.add('key-down'); // Add visual "down" state
-                    logMessage(`KeyDown: ${key}`, 'sent');
-                    pressedToggleKeys[key] = true;
-                }
-            });
-        });
-
         const spaceButton = document.getElementById('spaceButton');
         if (spaceButton) { // Good practice: check if element exists before adding listener
             spaceButton.addEventListener('keydown', function(event) {
@@ -479,7 +445,6 @@
             const sensitivity = 2.5; // Adjust this value to change mouse movement speed
             let count = 0; // 用于节流的计时器变量
             const DIVIDER = 5; 
-            // const CLICK_THRESHOLD = 5; // Pixels: Max movement allowed for a click
 
             // Event listener for the mode switch
             touchpadModeSwitch.addEventListener('change', () => {
