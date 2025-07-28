@@ -126,7 +126,7 @@
             justify-content: center;
             margin-bottom: 15px;
             gap: 10px;
-            font-size: 3.5rem;
+            font-size: 1.5rem;
         }
 
         .switch {
@@ -259,6 +259,10 @@
             <div class="input-fields">
                 <button id="spaceButton" onclick="sendCommand('press', {key: 'space'})">📛</button>
                 <button onclick="sendCommand('hotkey', {keys: ['ctrl', 'space']})">🔃</button>
+            </div>
+            <div class="input-fields">
+                <button onclick="sendCommand('hotkey', {keys: ['ctrl', 'z']})">↩️</button>
+                <button onclick="sendCommand('hotkey', {keys: ['ctrl', 'shift', 'z']})">↪️</button>
             </div>
         </div>
         <hr>
@@ -452,8 +456,7 @@
                 const message = isArrayMode ? 'Array Mode Activated.' : 'Mouse Mode Activated.';
                 logMessage('Touchpad: ' + message, 'info');
 
-                // Clear any ongoing touch states when switching modes
-                cancelAnimationFrame(animationFrameId); 
+                // Clear any ongoing touch states when switching modes 
                 animationFrameId = null;
                 initialTouchX = null; 
                 initialTouchY = null;
@@ -466,6 +469,7 @@
 
 
             touchpad.addEventListener('touchstart', (e) => {
+                console.log("pad: touch start")
                 e.preventDefault(); // Prevent scrolling/zooming on the touchpad area
                 if (e.touches.length === 1) {
                     count ++;
