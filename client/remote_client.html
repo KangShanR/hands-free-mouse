@@ -282,9 +282,12 @@
         </div>
         <hr>
 
-        <div class="input-fields">
-                <button onclick="sendCommand('press', {key: 'enter'})">Enter</button>
+        <div class="input-group">
+            <div class="input-fields">
+                    <button onclick="sendCommand('press', {key: 'enter'})">Enter</button>
+            </div>
         </div>
+        <hr>
          <div class="switch-container">
             <span id="span1">Array Mode </span>
             <label class="switch">
@@ -293,11 +296,12 @@
             </label>
         </div>
         <div id="touchpad">
-            <p>Touch and drag here to move mouse</p>
+            <p>Touch to click, swing to move mouse</p>
         </div>
+        <hr>
         <div class="input-group">
             <div class="input-fields">
-                <button onclick="sendCommand('click', {})">👆</button>
+                <!-- <button onclick="sendCommand('click', {})">👆</button> -->
                 <button onclick="sendCommand('rightclick', {})">⏳</button>
             </div>
         </div>
