@@ -513,9 +513,13 @@
 
                 const deltaX = finalTouchX - firstTouchX;
                 const deltaY = finalTouchY - firstTouchY;
+                const clickTouchThreshold = 10;
+
                 console.log("deltaX:", deltaX, ",deltaY:", deltaY)
-                
-                if(arrayModeSwitch.checked){
+                if(Math.abs(deltaX) + Math.abs(deltaY) < clickTouchThreshold){
+                    console.log("Short touch: just click")
+                    sendCommand('click', {})
+                }else if(arrayModeSwitch.checked){
                     // Determine primary direction of swipe
                     if (Math.abs(deltaX) > Math.abs(deltaY)) { // Horizontal swipe
                         if (deltaX > 0) {
