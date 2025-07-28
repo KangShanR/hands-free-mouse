@@ -218,7 +218,6 @@
                 <button onclick="sendCommand('press', {key: 'f11'})">F11</button>
             </div>
             <div class="input-fields">
-                <button  onclick="sendCommand('press', {key: 'esc'})">Esc</button>
                 <button  onclick="sendCommand('hotkey', {keys: ['ctrl', 'a']})">All</button>
             </div>
             <div class="input-fields">
@@ -246,12 +245,6 @@
         </div>
         <hr>
         <div class="input-group">
-            <div class="input-fields">
-                <button onclick="sendCommand('press', {key: 'ctrl'})">Ctrl</button>
-            </div>
-            <div class="input-fields">
-                <button onclick="sendCommand('press', {key: 'win'})">Win</button>
-            </div>
             <div class="input-fields">  
                 <button onclick="sendCommand('press', {key: 'tab'})">tab</button>
                 <button onclick="sendCommand('hotkey', {keys: ['shift', 'tab']})">tab⬅️</button>
@@ -284,7 +277,12 @@
 
         <div class="input-group">
             <div class="input-fields">
-                    <button onclick="sendCommand('press', {key: 'enter'})">Enter</button>
+                <button onclick="sendCommand('press', {key: 'win'})">Win</button>
+                <button onclick="sendCommand('press', {key: 'ctrl'})">Ctrl</button>
+            </div>
+            <div class="input-fields">
+                <button  onclick="sendCommand('press', {key: 'esc'})">Esc</button>
+                <button onclick="sendCommand('press', {key: 'enter'})">Enter</button>
             </div>
         </div>
         <hr>
