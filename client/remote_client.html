@@ -126,6 +126,7 @@
             justify-content: center;
             margin-bottom: 15px;
             gap: 10px;
+            font-size: 3.5rem;
         }
 
         .switch {
@@ -151,14 +152,14 @@
             background-color: #ccc;
             -webkit-transition: .4s;
             transition: .4s;
-            border-radius: 54px;
+            border-radius: 60px;
         }
 
         .slider:before {
             position: absolute;
             content: "";
-            height: 46px;
-            width: 46px;
+            height: 52px;
+            width: 52px;
             left: 4px;
             bottom: 4px;
             background-color: white;
@@ -176,9 +177,9 @@
         }
 
         input:checked + .slider:before {
-            -webkit-transform: translateX(36px);
-            -ms-transform: translateX(36px);
-            transform: translateX(36px);
+            -webkit-transform: translateX(40px);
+            -ms-transform: translateX(40px);
+            transform: translateX(40px);
         }
 
     </style>
@@ -284,12 +285,11 @@
 
         <!-- <h2>Touchpad:</h2> -->
          <div class="switch-container">
-            <span>Mouse Mode</span>
+            <span id="span1">Array Mode </span>
             <label class="switch">
                 <input type="checkbox" id="touchpadModeSwitch">
                 <span class="slider"></span>
             </label>
-            <span>Array Mode (Arrows)</span>
         </div>
         <div id="touchpad">
             <p>Touch and drag here to move mouse</p>
