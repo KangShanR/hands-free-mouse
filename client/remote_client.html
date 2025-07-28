@@ -288,7 +288,7 @@
          <div class="switch-container">
             <span id="span1">Array Mode </span>
             <label class="switch">
-                <input type="checkbox" id="touchpadModeSwitch">
+                <input type="checkbox" id="arrayModeSwitch">
                 <span class="slider"></span>
             </label>
         </div>
@@ -348,7 +348,7 @@
         const disconnectBtn = document.getElementById('disconnectBtn');
         const serverIpInput = document.getElementById('serverIp');
         const serverPortInput = document.getElementById('serverPort');
-        const touchpadModeSwitch = document.getElementById('touchpadModeSwitch');
+        const arrayModeSwitch = document.getElementById('arrayModeSwitch');
 
         function logMessage(msg, type = 'info') {
             const p = document.createElement('p');
@@ -451,8 +451,8 @@
             const DIVIDER = 5; 
 
             // Event listener for the mode switch
-            touchpadModeSwitch.addEventListener('change', () => {
-                isArrayMode = touchpadModeSwitch.checked;
+            arrayModeSwitch.addEventListener('change', () => {
+                isArrayMode = arrayModeSwitch.checked;
                 const message = isArrayMode ? 'Array Mode Activated.' : 'Mouse Mode Activated.';
                 logMessage('Touchpad: ' + message, 'info');
 
@@ -469,7 +469,6 @@
 
 
             touchpad.addEventListener('touchstart', (e) => {
-                console.log("pad: touch start")
                 e.preventDefault(); // Prevent scrolling/zooming on the touchpad area
                 if (e.touches.length === 1) {
                     count ++;
@@ -484,7 +483,7 @@
             touchpad.addEventListener('touchmove', (e) => {
                 e.preventDefault(); // Prevent scrolling/zooming on the touchpad area
                 if (e.touches.length === 1 && lastTouchX !== null && 
-                        !touchpadModeSwitch.checked) {
+                        !arrayModeSwitch.checked) {
                     count ++;
                     if(count % DIVIDER === 0){
                         const currentTouchX = e.touches[0].clientX;
@@ -514,22 +513,26 @@
 
                 const deltaX = finalTouchX - firstTouchX;
                 const deltaY = finalTouchY - firstTouchY;
-                // Determine primary direction of swipe
-                if (Math.abs(deltaX) > Math.abs(deltaY)) { // Horizontal swipe
-                    if (deltaX > 0) {
-                        sendCommand('press', { key: 'right' });
-                        logMessage('Array Mode: Swiped Right (Arrow Right)', 'info');
-                    } else {
-                        sendCommand('press', { key: 'left' });
-                        logMessage('Array Mode: Swiped Left (Arrow Left)', 'info');
-                    }
-                } else { // Vertical swipe
-                    if (deltaY > 0) {
-                        sendCommand('press', { key: 'down' });
-                        logMessage('Array Mode: Swiped Down (Arrow Down)', 'info');
-                    } else {
-                        sendCommand('press', { key: 'up' });
-                        logMessage('Array Mode: Swiped Up (Arrow Up)', 'info');
+                console.log("deltaX:", deltaX, ",deltaY:", deltaY)
+                
+                if(arrayModeSwitch.checked){
+                    // Determine primary direction of swipe
+                    if (Math.abs(deltaX) > Math.abs(deltaY)) { // Horizontal swipe
+                        if (deltaX > 0) {
+                            sendCommand('press', { key: 'right' });
+                            logMessage('Array Mode: Swiped Right (Arrow Right)', 'info');
+                        } else {
+                            sendCommand('press', { key: 'left' });
+                            logMessage('Array Mode: Swiped Left (Arrow Left)', 'info');
+                        }
+                    } else { // Vertical swipe
+                        if (deltaY > 0) {
+                            sendCommand('press', { key: 'down' });
+                            logMessage('Array Mode: Swiped Down (Arrow Down)', 'info');
+                        } else {
+                            sendCommand('press', { key: 'up' });
+                            logMessage('Array Mode: Swiped Up (Arrow Up)', 'info');
+                        }
                     }
                 }
                 touchpad.classList.remove('active'); // Remove visual feedback
