@@ -518,9 +518,14 @@
                 const clickTouchThreshold = 10;
 
                 console.log("deltaX:", deltaX, ",deltaY:", deltaY)
-                if(Math.abs(deltaX) + Math.abs(deltaY) < clickTouchThreshold){
+                isClick = Math.abs(deltaX) + Math.abs(deltaY) < clickTouchThreshold;
+                if(isClick){
                     console.log("Short touch: just click")
-                    sendCommand('click', {})
+                    if(arrayModeSwitch.checked){
+                        sendCommand('press', {key:'enter'})
+                    }else{
+                        sendCommand('click', {})
+                    }
                 }else if(arrayModeSwitch.checked){
                     // Determine primary direction of swipe
                     if (Math.abs(deltaX) > Math.abs(deltaY)) { // Horizontal swipe
