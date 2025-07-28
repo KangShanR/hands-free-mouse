@@ -233,13 +233,15 @@
                 <button class="arrayBtn" onclick="sendCommand('press', {key: 'home'})">Home</button>
                 <button class="arrayBtn" onclick="sendCommand('press', {key: 'pageup'})">Pgup</button>
             </div>
-
-            <div class="input-fields">
-                <button class="arrayBtn" onclick="sendCommand('press', {key: 'enter'})">🫵</button>
-            </div>
             <div class="input-fields">
                 <button class="arrayBtn" onclick="sendCommand('press', {key: 'end'})">End</button>
                 <button class="arrayBtn" onclick="sendCommand('press', {key: 'pagedown'})">Pgdn</button>
+            </div>
+        </div>
+        <hr>
+        <div class="input-group">
+            <div class="input-fields">
+                <button onclick="sendCommand('open_terminal_and_exec', {command: 'rkodi'})">🎬</button>
             </div>
         </div>
         <hr>
@@ -252,11 +254,7 @@
             </div>
             <div class="input-fields">  
                 <button onclick="sendCommand('press', {key: 'tab'})">tab</button>
-                <button onclick="sendCommand('press', {key: 'tab'})">tab⬅️</button>
-            </div>
-            <div class="input-fields">
-                <button onclick="sendCommand('hotkey', {keys: ['ctrl', 'tab']})">⏭</button>
-                <button onclick="sendCommand('hotkey', {keys: ['ctrl', 'shift', 'tab']})">⏮</button>
+                <button onclick="sendCommand('hotkey', {keys: ['shift', 'tab']})">tab⬅️</button>
             </div>
             <div class="input-fields">
                 <button id="spaceButton" onclick="sendCommand('press', {key: 'space'})">📛</button>
@@ -266,20 +264,23 @@
         <hr>
         <div class="input-group">
             <div class="input-fields">
+                <button onclick="sendCommand('hotkey', {keys: ['ctrl', 't']})">📄➕</button>
+                <button onclick="sendCommand('hotkey', {keys: ['ctrl', 'w']})">📄❌</button>
+            </div>
+            <div class="input-fields">
                 <button onclick="sendCommand('hotkey', {keys: ['ctrl', '-']})">🔎-</button>
                 <button onclick="sendCommand('hotkey', {keys: ['ctrl', '+']})">🔎+</button>
             </div>
-        </div>
-        <hr>
-
-        <div class="input-group">
             <div class="input-fields">
-                <button onclick="sendCommand('open_terminal_and_exec', {command: 'rkodi'})">🎬</button>
+                <button onclick="sendCommand('hotkey', {keys: ['ctrl', 'tab']})">⏭️</button>
+                <button onclick="sendCommand('hotkey', {keys: ['ctrl', 'shift', 'tab']})">⏮️</button>
             </div>
         </div>
         <hr>
 
-        <!-- <h2>Touchpad:</h2> -->
+        <div class="input-fields">
+                <button onclick="sendCommand('press', {key: 'enter'})">Enter</button>
+        </div>
          <div class="switch-container">
             <span id="span1">Array Mode </span>
             <label class="switch">
@@ -290,11 +291,9 @@
         <div id="touchpad">
             <p>Touch and drag here to move mouse</p>
         </div>
-        <hr>
-
         <div class="input-group">
             <div class="input-fields">
-                <button onclick="sendCommand('click', {})">📌</button>
+                <button onclick="sendCommand('click', {})">👆</button>
                 <button onclick="sendCommand('rightclick', {})">⏳</button>
             </div>
         </div>
