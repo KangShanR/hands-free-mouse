@@ -14,6 +14,8 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 # for safety, get the fucking address data from env, just set your envionment variables
 HOST = os.environ.get('SERVER_HOST')
 PORT = os.environ.get('SERVER_PORT')
+# disable the fucking fail safe
+pyautogui.FAILSAFE = False
 
 async def handle_message(websocket):
     """
