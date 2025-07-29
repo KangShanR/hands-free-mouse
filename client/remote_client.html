@@ -212,35 +212,10 @@
         
         <div class="input-group">
             <div class="input-fields">
-                <button onclick="sendCommand('press', {key: 'f2'})">F2</button>
-                <button onclick="sendCommand('press', {key: 'f5'})">F5</button>
-                <button onclick="sendCommand('press', {key: 'f6'})">F6</button>
-                <button onclick="sendCommand('press', {key: 'f11'})">F11</button>
+                <button onclick="sendCommand('open_terminal_and_exec', {command: 'rkodi'})">🎬</button>
             </div>
             <div class="input-fields">
                 <button  onclick="sendCommand('hotkey', {keys: ['ctrl', 'a']})">All</button>
-            </div>
-            <div class="input-fields">
-                <button  onclick="sendCommand('press', {key: 'backspace'})">Back</button>
-                <button  onclick="sendCommand('press', {key: 'delete'})">Del</button>
-            </div>
-        </div>
-        <hr>
-        <!-- <h2>Control Commands:</h2> -->
-         <div class="input-group">
-            <div class="input-fields">
-                <button class="arrayBtn" onclick="sendCommand('press', {key: 'home'})">Home</button>
-                <button class="arrayBtn" onclick="sendCommand('press', {key: 'pageup'})">Pgup</button>
-            </div>
-            <div class="input-fields">
-                <button class="arrayBtn" onclick="sendCommand('press', {key: 'end'})">End</button>
-                <button class="arrayBtn" onclick="sendCommand('press', {key: 'pagedown'})">Pgdn</button>
-            </div>
-        </div>
-        <hr>
-        <div class="input-group">
-            <div class="input-fields">
-                <button onclick="sendCommand('open_terminal_and_exec', {command: 'rkodi'})">🎬</button>
             </div>
         </div>
         <hr>
@@ -275,6 +250,27 @@
             <div class="input-fields">
                 <button onclick="sendCommand('hotkey', {keys: ['alt', 'left']})">⬅️</button>
                 <button onclick="sendCommand('hotkey', {keys: ['alt', 'right']})">➡️</button>
+            </div>
+        </div>
+        <hr>
+        <div class="input-group">
+            <div class="input-fields">
+                <button  onclick="sendCommand('press', {key: 'backspace'})">Back</button>
+                <button  onclick="sendCommand('press', {key: 'delete'})">Del</button>
+            </div>
+            <div class="input-fields">
+                <button onclick="sendCommand('press', {key: 'f2'})">F2</button>
+                <button onclick="sendCommand('press', {key: 'f5'})">F5</button>
+                <button onclick="sendCommand('press', {key: 'f6'})">F6</button>
+                <button onclick="sendCommand('press', {key: 'f11'})">F11</button>
+            </div>
+            <div class="input-fields">
+                <button class="arrayBtn" onclick="sendCommand('press', {key: 'home'})">Home</button>
+                <button class="arrayBtn" onclick="sendCommand('press', {key: 'pageup'})">Pgup</button>
+            </div>
+            <div class="input-fields">
+                <button class="arrayBtn" onclick="sendCommand('press', {key: 'end'})">End</button>
+                <button class="arrayBtn" onclick="sendCommand('press', {key: 'pagedown'})">Pgdn</button>
             </div>
         </div>
         <hr>
