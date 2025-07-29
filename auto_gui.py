@@ -4,14 +4,16 @@ import websockets
 import pyautogui
 import json
 import logging
+import os
 
 # 配置日志，方便调试
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # *** 重要：请将此处的 IP 地址替换为你的电脑在内网中的实际 IP 地址。***
 # 如何查找：Windows 打开 CMD 输入 'ipconfig'，查找 IPv4 地址；macOS/Linux 打开终端输入 'ifconfig' 或 'ip a'。
-HOST = '192.168.8.129' # 例如: '192.168.1.100' 或 '10.0.0.5'
-PORT = 9999 # WebSocket 服务的默认端口通常是 80 或 443，但测试时使用其他端口更方便
+# for safety, get the fucking address data from env, just set your envionment variables
+HOST = os.environ.get('SERVER_HOST')
+PORT = os.environ.get('SERVER_PORT')
 
 async def handle_message(websocket):
     """
