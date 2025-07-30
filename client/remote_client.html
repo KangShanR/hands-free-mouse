@@ -374,11 +374,12 @@
             messagesDiv.scrollTop = messagesDiv.scrollHeight; // Auto-scroll to bottom
         }
 
-        connectBtn.onclick = function() {
+        function connectServer() {
             const ip = serverIpInput.value;
             const port = serverPortInput.value;
             const url = `ws://${ip}:${port}`;
-
+            
+            logMessage('connectting to server.', 'info');
             if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) {
                 logMessage('Already connected or connecting.', 'info');
                 return;
@@ -415,6 +416,7 @@
                 logMessage('Disconnected from server.', 'info');
                 connectBtn.disabled = false;
                 disconnectBtn.disabled = true;
+                setTimeout(connectServer(), 1000);
             };
 
             ws.onerror = function(error) {
@@ -432,6 +434,32 @@
                 ws.close();
             }
         };
+
+        connectBtn.onclick = connectServer;
+        // connectBtn.addEventListener('click', connectServer);
+        document.addEventListener('DOMContentLoaded', () => {
+            // NEW: Automatically connect to server on page load
+            connectBtn.onclick(); 
+        })
+
+        document.addEventListener('visibilitychange', function() {
+            const statusSpan = document.getElementById('visibilityStatus');
+
+            if (document.visibilityState === 'hidden') {
+                // 页面变为不可见时执行的代码
+                logMessage('Visibility faded.', 'info');
+            } else {
+                // 页面变为可见时执行的代码
+                logMessage('Visibility back.', 'info');
+                if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) {
+                    logMessage('Visibility back: Already connected or connecting.', 'info');
+                    return;
+                }else{
+                    logMessage('Visibility back: Connecting again.', 'info');
+                    connectBtn.onclick();
+                }
+            }
+        });
 
         function sendCommand(command, args = {}) {
             if (ws && ws.readyState === WebSocket.OPEN) {
