@@ -182,50 +182,43 @@
             transform: translateX(40px);
         }
 
-        /* UPDATED: Switch styles (now a select box) */
-        .mode-select-container {
+        /* Updated: Styles for mode buttons container */
+        .touchpad-mode-buttons {
             display: flex;
-            align-items: center;
             justify-content: center;
+            gap: 10px; /* Space between buttons */
             margin-bottom: 15px;
-            gap: 15px; /* Slightly reduced gap for more elements */
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: #555;
+            flex-wrap: wrap; /* Allow wrapping on small screens */
         }
 
-        .mode-select-container label {
-            white-space: nowrap; /* Prevent text wrapping */
-        }
-
-        .mode-select-container select {
+        /* Updated: Styles for mode buttons themselves (now using .touchpad-mode-btn) */
+        .touchpad-mode-btn { /* Changed from .touchpad-mode-buttons button */
+            flex: 1 1 120px; /* Allow buttons to grow, min width 120px */
             padding: 10px 15px;
-            border: 2px solid #3498db;
-            border-radius: 8px;
-            background-color: #eaf6fd;
-            font-size: 1.3rem; /* Adjusted for better fit */
-            font-weight: bold;
-            color: #2c3e50;
-            appearance: none; /* Remove default select arrow */
-            -webkit-appearance: none;
-            -moz-appearance: none;
+            font-size: 1.1rem; /* Smaller font size than main action buttons */
+            height: auto; /* Allow height to adjust based on content */
+            background-color: #555; /* Default inactive color */
+            color: white;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
-            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%232c3e50%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13.2-5.4H18.2c-4.9%200-9.6%201.8-13.2%205.4A17.6%2017.6%200%200%200%200%2082.5c0%204.9%201.8%209.6%205.4%2013.2l128%20128c3.6%203.6%208.3%205.4%2013.2%205.4s9.6-1.8%2013.2-5.4l128-128c3.7-3.6%205.5-8.3%205.5-13.2%200-4.9-1.8-9.6-5.5-13.2z%22%2F%3E%3C%2Fsvg%3E');
-            background-repeat: no-repeat;
-            background-position: right 15px center;
-            background-size: 18px 18px;
-            padding-right: 40px; /* Make space for the arrow */
+            transition: background-color 0.2s ease, transform 0.1s ease;
         }
 
-        .mode-select-container select:hover {
-            border-color: #2980b9;
+        .touchpad-mode-btn:hover { /* Changed from .touchpad-mode-buttons button:hover */
+            background-color: #777;
+            transform: translateY(-2px);
         }
 
-        .mode-select-container select:focus {
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.5);
+        .touchpad-mode-btn.active-mode { /* Changed from .touchpad-mode-buttons button.active-mode */
+            background-color: #28a745; /* Active mode color (green) */
+            font-weight: bold;
+            transform: none; /* No lift when active */
         }
-
+        .touchpad-mode-btn.active-mode:hover { /* Changed from .touchpad-mode-buttons button.active-mode:hover */
+            background-color: #28a745; /* Keep active color on hover */
+            transform: none;
+        }
     </style>
 </head>
 <body>
@@ -344,13 +337,10 @@
             </div>
         </div>
         <hr>
-         <div class="mode-select-container">
-            <label for="touchpadModeSelect">Touchpad Mode:</label>
-            <select id="touchpadModeSelect">
-                <option value="mouse">Mouse</option>
-                <option value="scroll">Scroll</option>
-                <option value="array">Array</option>
-            </select>
+        <div class="touchpad-mode-buttons">
+            <button class="touchpad-mode-btn" data-mode="mouse">Mouse</button>
+            <button class="touchpad-mode-btn" data-mode="array">Array</button>
+            <button class="touchpad-mode-btn" data-mode="scroll">Scroll</button>
         </div>
         <div id="touchpad">
             <p>Touch to click, swing to move mouse</p>
@@ -410,6 +400,8 @@
         const serverIpInput = document.getElementById('serverIp');
         const serverPortInput = document.getElementById('serverPort');
         const touchpadModeSelect = document.getElementById('touchpadModeSelect');
+
+        const touchpadModeButtons = document.querySelectorAll('.touchpad-mode-btn'); 
 
         function logMessage(msg, type = 'info') {
             const p = document.createElement('p');
@@ -542,21 +534,39 @@
             const scrollSensitivity = 0.01;
             let currentTouchpadMode = 'mouse';
 
-            // Event listener for the mode switch
-            touchpadModeSelect.addEventListener('change', () => {
-                currentTouchpadMode = touchpadModeSelect.value;
-                const message = `Switched to ${currentTouchpadMode.toUpperCase()} Mode.`;
-                logMessage('Touchpad: ' + message, 'info');
+            // Function to set the active mode and update button styles
+            function setActiveMode(mode) {
+                currentTouchpadMode = mode;
+                touchpadModeButtons.forEach(button => {
+                    if (button.dataset.mode === mode) {
+                        button.classList.add('active-mode');
+                    } else {
+                        button.classList.remove('active-mode');
+                    }
+                });
+                logMessage(`Touchpad: Switched to ${mode.toUpperCase()} Mode.`, 'info');
 
-                // Clear any ongoing touch states when switching modes 
-                firstTouchX = null; 
-                firstTouchY = null;
+                // Clear any ongoing touch states when switching modes
+                animationFrameId = null;
+                initialTouchX = null; 
+                initialTouchY = null;
                 lastTouchX = null;
                 lastTouchY = null;
                 touchpad._lastSentX = null;
                 touchpad._lastSentY = null;
                 touchpad.classList.remove('active');
+            }
+
+            // Loop through all touchpad mode buttons and add a single event listener
+            touchpadModeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const mode = button.dataset.mode; // Get the mode from the data-mode attribute
+                    setActiveMode(mode);
+                });
             });
+
+            // Set initial active mode on page load
+            setActiveMode('mouse');
 
 
             touchpad.addEventListener('touchstart', (e) => {
@@ -572,6 +582,7 @@
             });
 
             touchpad.addEventListener('touchmove', (e) => {
+                console.log("move touch start, mode:", currentTouchpadMode);
                 e.preventDefault(); // Prevent scrolling/zooming on the touchpad area
                 if (e.touches.length === 1 && lastTouchX !== null && 
                         currentTouchpadMode == 'mouse') {
