@@ -416,7 +416,7 @@
                 logMessage('Disconnected from server.', 'info');
                 connectBtn.disabled = false;
                 disconnectBtn.disabled = true;
-                setTimeout(connectServer(), 1000);
+                connectServer();
             };
 
             ws.onerror = function(error) {
