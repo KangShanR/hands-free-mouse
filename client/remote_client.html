@@ -643,7 +643,7 @@
                             logMessage(`Touchpad: Horizontally scrolled ${scrollAmount} clicks (Scroll Mode).`, 'info');
                         }else{
                             const scrollAmount = Math.round(deltaY * scrollSensitivity); 
-                            sendCommand('scroll', { clicks: -scrollAmount }); // Negative for scroll down (positive deltaY)
+                            sendCommand('scroll', { clicks: scrollAmount }); // Negative for scroll down (positive deltaY)
                             logMessage(`Touchpad: Vertibally scrolled ${scrollAmount} clicks (Scroll Mode).`, 'info');
                         }
                     }
