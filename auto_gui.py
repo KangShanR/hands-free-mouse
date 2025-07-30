@@ -142,7 +142,22 @@ async def handle_message(websocket):
                             response_message = f"Linux command executed directly: '{target_command}' (no new terminal window)."
                     else:
                         response_message = {"status": "error", "message": "Open terminal command requires a 'command' argument."}
-
+                elif(command == 'scroll'):
+                    clicks = args.get('clicks')
+                    logging.info(f"scroll: clicks:{clicks}")
+                    if clicks:
+                        pyautogui.scroll(clicks)
+                        response_message = {"status": "success", "message": f"Scroll: {clicks} was scrolled."}
+                    else:
+                        response_message = {"status": "error", "message": "No specified 'clicks' in arguments to be scrolled."}
+                elif(command == 'hscroll'):
+                    clicks = args.get('clicks')
+                    logging.info(f"HScroll: clicks:{clicks}")
+                    if clicks:
+                        pyautogui.hscroll(clicks)
+                        response_message = {"status": "success", "message": f"HScroll: {clicks} was scrolled."}
+                    else:
+                        response_message = {"status": "error", "message": "No specified 'clicks' in arguments to be hscrolled."}
                 else:
                     response_message = {"status": "error", "message": f"Unknown command: '{command}'."}
 

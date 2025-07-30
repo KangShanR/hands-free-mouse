@@ -182,6 +182,50 @@
             transform: translateX(40px);
         }
 
+        /* UPDATED: Switch styles (now a select box) */
+        .mode-select-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            gap: 15px; /* Slightly reduced gap for more elements */
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .mode-select-container label {
+            white-space: nowrap; /* Prevent text wrapping */
+        }
+
+        .mode-select-container select {
+            padding: 10px 15px;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            background-color: #eaf6fd;
+            font-size: 1.3rem; /* Adjusted for better fit */
+            font-weight: bold;
+            color: #2c3e50;
+            appearance: none; /* Remove default select arrow */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            cursor: pointer;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%232c3e50%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13.2-5.4H18.2c-4.9%200-9.6%201.8-13.2%205.4A17.6%2017.6%200%200%200%200%2082.5c0%204.9%201.8%209.6%205.4%2013.2l128%20128c3.6%203.6%208.3%205.4%2013.2%205.4s9.6-1.8%2013.2-5.4l128-128c3.7-3.6%205.5-8.3%205.5-13.2%200-4.9-1.8-9.6-5.5-13.2z%22%2F%3E%3C%2Fsvg%3E');
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 18px 18px;
+            padding-right: 40px; /* Make space for the arrow */
+        }
+
+        .mode-select-container select:hover {
+            border-color: #2980b9;
+        }
+
+        .mode-select-container select:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.5);
+        }
+
     </style>
 </head>
 <body>
@@ -300,12 +344,13 @@
             </div>
         </div>
         <hr>
-         <div class="switch-container">
-            <span id="span1">Array Mode </span>
-            <label class="switch">
-                <input type="checkbox" id="arrayModeSwitch">
-                <span class="slider"></span>
-            </label>
+         <div class="mode-select-container">
+            <label for="touchpadModeSelect">Touchpad Mode:</label>
+            <select id="touchpadModeSelect">
+                <option value="mouse">Mouse</option>
+                <option value="scroll">Scroll</option>
+                <option value="array">Array</option>
+            </select>
         </div>
         <div id="touchpad">
             <p>Touch to click, swing to move mouse</p>
@@ -364,7 +409,7 @@
         const disconnectBtn = document.getElementById('disconnectBtn');
         const serverIpInput = document.getElementById('serverIp');
         const serverPortInput = document.getElementById('serverPort');
-        const arrayModeSwitch = document.getElementById('arrayModeSwitch');
+        const touchpadModeSelect = document.getElementById('touchpadModeSelect');
 
         function logMessage(msg, type = 'info') {
             const p = document.createElement('p');
@@ -416,9 +461,8 @@
                 logMessage('Disconnected from server.', 'info');
                 connectBtn.disabled = false;
                 disconnectBtn.disabled = true;
-                // connectServer();
             };
-
+            
             ws.onerror = function(error) {
                 logMessage(`WebSocket Error: Connection failed. Check server status or IP/Port.`, 'error');
                 statusIndicator.classList.remove('connected');
@@ -426,6 +470,7 @@
                 statusText.style.color = 'orange';
                 connectBtn.disabled = false;
                 disconnectBtn.disabled = true;
+                connectServer();
             };
         };
 
@@ -456,7 +501,7 @@
                     return;
                 }else{
                     logMessage('Visibility back: Connecting again.', 'info');
-                    connectBtn.onclick();
+                    connectServer();
                 }
             }
         });
@@ -494,16 +539,18 @@
             let count = 0; // 用于节流的计时器变量
             const DIVIDER = 5; 
 
+            const scrollSensitivity = 0.01;
+            let currentTouchpadMode = 'mouse';
+
             // Event listener for the mode switch
-            arrayModeSwitch.addEventListener('change', () => {
-                isArrayMode = arrayModeSwitch.checked;
-                const message = isArrayMode ? 'Array Mode Activated.' : 'Mouse Mode Activated.';
+            touchpadModeSelect.addEventListener('change', () => {
+                currentTouchpadMode = touchpadModeSelect.value;
+                const message = `Switched to ${currentTouchpadMode.toUpperCase()} Mode.`;
                 logMessage('Touchpad: ' + message, 'info');
 
                 // Clear any ongoing touch states when switching modes 
-                animationFrameId = null;
-                initialTouchX = null; 
-                initialTouchY = null;
+                firstTouchX = null; 
+                firstTouchY = null;
                 lastTouchX = null;
                 lastTouchY = null;
                 touchpad._lastSentX = null;
@@ -527,7 +574,7 @@
             touchpad.addEventListener('touchmove', (e) => {
                 e.preventDefault(); // Prevent scrolling/zooming on the touchpad area
                 if (e.touches.length === 1 && lastTouchX !== null && 
-                        !arrayModeSwitch.checked) {
+                        currentTouchpadMode == 'mouse') {
                     count ++;
                     if(count % DIVIDER === 0){
                         const currentTouchX = e.touches[0].clientX;
@@ -542,8 +589,6 @@
                             lastTouchX = currentTouchX;
                             lastTouchY = currentTouchY;
                         }
-                    }else{
-                        console.log("skiped count:" + count)
                     }
                 }
             });
@@ -562,31 +607,47 @@
                 console.log("deltaX:", deltaX, ",deltaY:", deltaY)
                 isClick = Math.abs(deltaX) + Math.abs(deltaY) < clickTouchThreshold;
                 if(isClick){
-                    console.log("Short touch: just click")
-                    if(arrayModeSwitch.checked){
+                    console.log("Short touch: just a click")
+                    if(currentTouchpadMode == 'array'){
+                        console.log("Array click")
                         sendCommand('press', {key:'enter'})
                     }else{
+                        console.log("Literily click")
                         sendCommand('click', {})
                     }
-                }else if(arrayModeSwitch.checked){
-                    // Determine primary direction of swipe
-                    if (Math.abs(deltaX) > Math.abs(deltaY)) { // Horizontal swipe
-                        if (deltaX > 0) {
-                            sendCommand('press', { key: 'right' });
-                            logMessage('Array Mode: Swiped Right (Arrow Right)', 'info');
-                        } else {
-                            sendCommand('press', { key: 'left' });
-                            logMessage('Array Mode: Swiped Left (Arrow Left)', 'info');
+                } else {
+                    if(currentTouchpadMode == 'array'){
+                        // Determine primary direction of swipe
+                        if (Math.abs(deltaX) > Math.abs(deltaY)) { // Horizontal swipe
+                            if (deltaX > 0) {
+                                sendCommand('press', { key: 'right' });
+                                logMessage('Array Mode: Swiped Right (Arrow Right)', 'info');
+                            } else {
+                                sendCommand('press', { key: 'left' });
+                                logMessage('Array Mode: Swiped Left (Arrow Left)', 'info');
+                            }
+                        } else { // Vertical swipe
+                            if (deltaY > 0) {
+                                sendCommand('press', { key: 'down' });
+                                logMessage('Array Mode: Swiped Down (Arrow Down)', 'info');
+                            } else {
+                                sendCommand('press', { key: 'up' });
+                                logMessage('Array Mode: Swiped Up (Arrow Up)', 'info');
+                            }
                         }
-                    } else { // Vertical swipe
-                        if (deltaY > 0) {
-                            sendCommand('press', { key: 'down' });
-                            logMessage('Array Mode: Swiped Down (Arrow Down)', 'info');
-                        } else {
-                            sendCommand('press', { key: 'up' });
-                            logMessage('Array Mode: Swiped Up (Arrow Up)', 'info');
+                    }else if (currentTouchpadMode == 'scroll'){
+                        // Normalize deltaY to a reasonable scroll amount
+                        if(Math.abs(deltaX) > Math.abs(deltaY)){
+                            const scrollAmount = Math.round(deltaX * scrollSensitivity); 
+                            sendCommand('hscroll', { clicks: -scrollAmount }); // Negative for scroll down (positive deltaY)
+                            logMessage(`Touchpad: Horizontally scrolled ${scrollAmount} clicks (Scroll Mode).`, 'info');
+                        }else{
+                            const scrollAmount = Math.round(deltaY * scrollSensitivity); 
+                            sendCommand('scroll', { clicks: -scrollAmount }); // Negative for scroll down (positive deltaY)
+                            logMessage(`Touchpad: Vertibally scrolled ${scrollAmount} clicks (Scroll Mode).`, 'info');
                         }
                     }
+
                 }
                 touchpad.classList.remove('active'); // Remove visual feedback
             });
@@ -595,6 +656,8 @@
                 e.preventDefault();
                 lastTouchX = null;
                 lastTouchY = null;
+                firstTouchX=null;
+                firstTouchY=null
                 touchpad.classList.remove('active');
             });
             // --- END NEW Touchpad Logic ---
