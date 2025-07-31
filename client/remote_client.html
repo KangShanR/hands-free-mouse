@@ -292,21 +292,6 @@
         <hr>
         <div class="input-group">
             <div class="input-fields">
-                <button onclick="sendCommand('hotkey', {keys: ['shift', 'n']})">⏭</button>
-                <button onclick="sendCommand('hotkey', {keys: ['shift', 'p']})">⏮</button>
-            </div>
-            <div class="input-fields">
-                <button id="spaceButton" onclick="sendCommand('press', {key: 'space'})"> </button>
-                <button onclick="sendCommand('press', {key: 'i'})">I</button>
-            </div>
-            <div class="input-fields">
-                <button onclick="sendCommand('press', {key: 'f'})">F</button>
-                <button onclick="sendCommand('press', {key: 'c'})">C</button>
-            </div>
-        </div>
-        <hr>
-        <div class="input-group">
-            <div class="input-fields">
                 <button  onclick="sendCommand('press', {key: 'backspace'})">Back</button>
                 <button  onclick="sendCommand('press', {key: 'delete'})">Del</button>
             </div>
@@ -323,6 +308,25 @@
             <div class="input-fields">
                 <button class="arrayBtn" onclick="sendCommand('press', {key: 'end'})">End</button>
                 <button class="arrayBtn" onclick="sendCommand('press', {key: 'pagedown'})">Pgdn</button>
+            </div>
+        </div>
+        <hr>
+        <div class="input-group">
+            <div class="input-fields">
+                <button onclick="sendCommand('hotkey', {keys: ['shift', 'n']})">⏭</button>
+                <button onclick="sendCommand('hotkey', {keys: ['shift', 'p']})">⏮</button>
+            </div>
+            <div class="input-fields">
+                <button id="spaceButton" onclick="sendCommand('press', {key: 'space'})"> </button>
+                <button onclick="sendCommand('press', {key: 'i'})">I</button>
+            </div>
+            <div class="input-fields">
+                <button onclick="sendCommand('press', {key: 'f'})">F</button>
+                <button onclick="sendCommand('press', {key: 'c'})">C</button>
+            </div>
+            <div class="input-fields">
+                <button onclick="sendCommand('press', {key: '/'})">/</button>
+                <button onclick="sendCommand('press', {key: '>'})">></button>
             </div>
         </div>
         <hr>
