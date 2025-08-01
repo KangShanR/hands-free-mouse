@@ -24,6 +24,10 @@ async def handle_message(websocket):
     """
     client_address = websocket.remote_address
     logging.info(f"Client connected: {client_address}")
+    # NEW: Character mapping for special characters
+    char_map = {
+        '<': ['shift', ','],
+    }
 
     try:
         async for message in websocket:
@@ -75,15 +79,23 @@ async def handle_message(websocket):
                         response_message = {"status": "error", "message": "Move command requires 'x' and 'y' arguments."}
                 elif command == 'type':
                     text = args.get('text')
+                    
                     if text is not None:
-                        pyautogui.write(text)
+                        for char in text:
+                            if char in char_map:
+                                pyautogui.hotkey(*char_map[char])
+                            else:
+                                pyautogui.write(char) 
                         response_message = {"status": "success", "message": f"Typed '{text}'."}
                     else:
                         response_message = {"status": "error", "message": "Type command requires 'text' argument."}
                 elif command == 'press':
                     key = args.get('key')
                     if key is not None:
-                        pyautogui.press(key)
+                        if key in char_map:
+                            pyautogui.hotkey(*char_map[key])
+                        else:
+                            pyautogui.press(key)
                         response_message = {"status": "success", "message": f"Pressed '{key}'."}
                     else:
                         response_message = {"status": "error", "message": "Press command requires 'key' argument."}
