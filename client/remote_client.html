@@ -29,13 +29,6 @@
             /* height: 80px; */
         }
 
-        .input-group label {
-            text-align: right;
-            /* Optional: Set a flex-shrink to prevent it from getting too small if needed */
-            flex: 0 0 30%; 
-            font-size: 1.5rem;
-        }
-
         .input-group input[type="text"],
         .input-group input[type="number"] {
             /* flex: <flex-grow> <flex-shrink> <flex-basis>; */
@@ -47,10 +40,11 @@
             border: 1px solid #ccc;
             border-radius: 4px;
             font-size: 1.5rem;
+            height: 80px;
         }
         /* Style for specific small inputs like X/Y coordinates */
         .input-group input[id^="click"] {
-            width: 80px; /* Make X and Y inputs even smaller */
+            width: 50%; /* Make X and Y inputs even smaller */
         }
         
         button {
@@ -359,32 +353,23 @@
         <hr>
         <div class="input-group">
             <div class="input-fields">       
-                <label>Type Text:</label>
-                <input type="text" id="typeText">
-            </div>
-            <div class="input-fields">            
+                <input type="text" placeholder="text some" id="typeText">
                 <button onclick="sendCommand('type', {text: document.getElementById('typeText').value.trim()})">Type</button>
             </div>
         </div>
         <hr>
         <div class="input-group">
             <div  class="input-fields">
-                <label>Press Key:</label>
                 <input type="text" id="pressKey" placeholder="e.g., enter, esc, space">
-            </div>
-            <div  class="input-fields">
                 <button onclick="sendCommand('press', {key: document.getElementById('pressKey').value.trim()})">Press</button>
             </div>
         </div>
         <hr>
         <div class="input-group">
             <div class="input-fields">
-                <label>Hotkey:</label>
                 <input type="text" id="hotkeyKeys" placeholder="space separated, e.g., ctrl alt del">
-            </div>
-            <div class="input-fields">
                 <button  onclick="sendCommand('hotkey', {keys: document.getElementById('hotkeyKeys')
-                .value.trim().split(' ')})">Hotkey</button>
+                        .value.trim().split(' ')})">Hotkey</button>
             </div>
         </div>
 
