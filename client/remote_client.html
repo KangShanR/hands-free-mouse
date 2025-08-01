@@ -311,7 +311,7 @@
                 <button onclick="sendCommand('hotkey', {keys: ['shift', 'p']})">⏮</button>
             </div>
             <div class="input-fields">
-                <button id="spaceButton" onclick="sendCommand('press', {key: 'space'})"> </button>
+                <button onclick="sendCommand('press', {key: '/'})">/</button>
                 <button onclick="sendCommand('press', {key: 'i'})">I</button>
             </div>
             <div class="input-fields">
@@ -319,7 +319,7 @@
                 <button onclick="sendCommand('press', {key: 'c'})">C</button>
             </div>
             <div class="input-fields">
-                <button onclick="sendCommand('press', {key: '/'})">/</button>
+                <button onclick="sendCommand('hotkey', {keys: ['shift', ',']})">></button>
                 <button onclick="sendCommand('press', {key: '>'})">></button>
             </div>
         </div>
@@ -328,6 +328,7 @@
         <div class="input-group">
             <div class="input-fields">
                 <button onclick="sendCommand('press', {key: 'win'})">Win</button>
+                <button id="spaceButton" onclick="sendCommand('press', {key: 'space'})"> </button>
             </div>
             <div class="input-fields">
                 <button  onclick="sendCommand('press', {key: 'esc'})">Esc</button>
