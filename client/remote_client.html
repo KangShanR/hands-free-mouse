@@ -319,8 +319,8 @@
                 <button onclick="sendCommand('press', {key: 'c'})">C</button>
             </div>
             <div class="input-fields">
-                <button onclick="sendCommand('hotkey', {keys: ['shift', ',']})">></button>
-                <button onclick="sendCommand('press', {key: '>'})">></button>
+                <button onclick="sendCommand('press', {key: '&gt;'})">&gt;</button>
+                <button onclick="sendCommand('press', {key: '&lt;'})">&lt;</button>
             </div>
         </div>
         <hr>
@@ -511,158 +511,158 @@
         }
         
         
-            // --- NEW: Touchpad Logic ---
-            const touchpad = document.getElementById('touchpad');
-            let lastTouchX = null;
-            let lastTouchY = null;
-            let firstTouchX = null;
-            let firstTouchY = null;
-            const sensitivity = 2.5; // Adjust this value to change mouse movement speed
-            let count = 0; // 用于节流的计时器变量
-            const DIVIDER = 5; 
+        // --- NEW: Touchpad Logic ---
+        const touchpad = document.getElementById('touchpad');
+        let lastTouchX = null;
+        let lastTouchY = null;
+        let firstTouchX = null;
+        let firstTouchY = null;
+        const sensitivity = 2.5; // Adjust this value to change mouse movement speed
+        let count = 0; // 用于节流的计时器变量
+        const DIVIDER = 5; 
 
-            const scrollSensitivity = 0.01;
-            let currentTouchpadMode = 'mouse';
+        const scrollSensitivity = 0.01;
+        let currentTouchpadMode = 'mouse';
 
-            // Function to set the active mode and update button styles
-            function setActiveMode(mode) {
-                currentTouchpadMode = mode;
-                touchpadModeButtons.forEach(button => {
-                    if (button.dataset.mode === mode) {
-                        button.classList.add('active-mode');
-                    } else {
-                        button.classList.remove('active-mode');
-                    }
-                });
-                logMessage(`Touchpad: Switched to ${mode.toUpperCase()} Mode.`, 'info');
-
-                // Clear any ongoing touch states when switching modes
-                animationFrameId = null;
-                initialTouchX = null; 
-                initialTouchY = null;
-                lastTouchX = null;
-                lastTouchY = null;
-                touchpad._lastSentX = null;
-                touchpad._lastSentY = null;
-                touchpad.classList.remove('active');
-            }
-
-            // Loop through all touchpad mode buttons and add a single event listener
+        // Function to set the active mode and update button styles
+        function setActiveMode(mode) {
+            currentTouchpadMode = mode;
             touchpadModeButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const mode = button.dataset.mode; // Get the mode from the data-mode attribute
-                    setActiveMode(mode);
-                });
-            });
-
-            // Set initial active mode on page load
-            setActiveMode('mouse');
-
-
-            touchpad.addEventListener('touchstart', (e) => {
-                e.preventDefault(); // Prevent scrolling/zooming on the touchpad area
-                if (e.touches.length === 1) {
-                    count ++;
-                    lastTouchX = e.touches[0].clientX;
-                    lastTouchY = e.touches[0].clientY;
-                    firstTouchX = e.touches[0].clientX;
-                    firstTouchY = e.touches[0].clientY;
-                    touchpad.classList.add('active'); // Visual feedback
-                }
-            });
-
-            touchpad.addEventListener('touchmove', (e) => {
-                console.log("move touch start, mode:", currentTouchpadMode);
-                e.preventDefault(); // Prevent scrolling/zooming on the touchpad area
-                if (e.touches.length === 1 && lastTouchX !== null && 
-                        currentTouchpadMode == 'mouse') {
-                    count ++;
-                    if(count % DIVIDER === 0){
-                        const currentTouchX = e.touches[0].clientX;
-                        const currentTouchY = e.touches[0].clientY;
-
-                        const deltaX = (currentTouchX - lastTouchX) * sensitivity;
-                        const deltaY = (currentTouchY - lastTouchY) * sensitivity;
-                        
-                        // Only send command if there's significant movement to avoid spamming
-                        if (Math.abs(deltaX) > 0.1 || Math.abs(deltaY) > 0.1) {
-                            sendCommand('move', { x: deltaX, y: deltaY, duration: 0})
-                            lastTouchX = currentTouchX;
-                            lastTouchY = currentTouchY;
-                        }
-                    }
-                }
-            });
-
-            touchpad.addEventListener('touchend', (e) => {
-                e.preventDefault(); // Prevent default touch behavior
-                lastTouchX = null;
-                lastTouchY = null;
-                const finalTouchX = e.changedTouches[0].clientX;
-                const finalTouchY = e.changedTouches[0].clientY;
-
-                const deltaX = finalTouchX - firstTouchX;
-                const deltaY = finalTouchY - firstTouchY;
-                const clickTouchThreshold = 10;
-
-                console.log("deltaX:", deltaX, ",deltaY:", deltaY)
-                isClick = Math.abs(deltaX) + Math.abs(deltaY) < clickTouchThreshold;
-                if(isClick){
-                    console.log("Short touch: just a click")
-                    if(currentTouchpadMode == 'array'){
-                        console.log("Array click")
-                        sendCommand('press', {key:'enter'})
-                    }else{
-                        console.log("Literily click")
-                        sendCommand('click', {})
-                    }
+                if (button.dataset.mode === mode) {
+                    button.classList.add('active-mode');
                 } else {
-                    if(currentTouchpadMode == 'array'){
-                        // Determine primary direction of swipe
-                        if (Math.abs(deltaX) > Math.abs(deltaY)) { // Horizontal swipe
-                            if (deltaX > 0) {
-                                sendCommand('press', { key: 'right' });
-                                logMessage('Array Mode: Swiped Right (Arrow Right)', 'info');
-                            } else {
-                                sendCommand('press', { key: 'left' });
-                                logMessage('Array Mode: Swiped Left (Arrow Left)', 'info');
-                            }
-                        } else { // Vertical swipe
-                            if (deltaY > 0) {
-                                sendCommand('press', { key: 'down' });
-                                logMessage('Array Mode: Swiped Down (Arrow Down)', 'info');
-                            } else {
-                                sendCommand('press', { key: 'up' });
-                                logMessage('Array Mode: Swiped Up (Arrow Up)', 'info');
-                            }
+                    button.classList.remove('active-mode');
+                }
+            });
+            logMessage(`Touchpad: Switched to ${mode.toUpperCase()} Mode.`, 'info');
+
+            // Clear any ongoing touch states when switching modes
+            animationFrameId = null;
+            initialTouchX = null; 
+            initialTouchY = null;
+            lastTouchX = null;
+            lastTouchY = null;
+            touchpad._lastSentX = null;
+            touchpad._lastSentY = null;
+            touchpad.classList.remove('active');
+        }
+
+        // Loop through all touchpad mode buttons and add a single event listener
+        touchpadModeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const mode = button.dataset.mode; // Get the mode from the data-mode attribute
+                setActiveMode(mode);
+            });
+        });
+
+        // Set initial active mode on page load
+        setActiveMode('mouse');
+
+
+        touchpad.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Prevent scrolling/zooming on the touchpad area
+            if (e.touches.length === 1) {
+                count ++;
+                lastTouchX = e.touches[0].clientX;
+                lastTouchY = e.touches[0].clientY;
+                firstTouchX = e.touches[0].clientX;
+                firstTouchY = e.touches[0].clientY;
+                touchpad.classList.add('active'); // Visual feedback
+            }
+        });
+
+        touchpad.addEventListener('touchmove', (e) => {
+            console.log("move touch start, mode:", currentTouchpadMode);
+            e.preventDefault(); // Prevent scrolling/zooming on the touchpad area
+            if (e.touches.length === 1 && lastTouchX !== null && 
+                    currentTouchpadMode == 'mouse') {
+                count ++;
+                if(count % DIVIDER === 0){
+                    const currentTouchX = e.touches[0].clientX;
+                    const currentTouchY = e.touches[0].clientY;
+
+                    const deltaX = (currentTouchX - lastTouchX) * sensitivity;
+                    const deltaY = (currentTouchY - lastTouchY) * sensitivity;
+                    
+                    // Only send command if there's significant movement to avoid spamming
+                    if (Math.abs(deltaX) > 0.1 || Math.abs(deltaY) > 0.1) {
+                        sendCommand('move', { x: deltaX, y: deltaY, duration: 0})
+                        lastTouchX = currentTouchX;
+                        lastTouchY = currentTouchY;
+                    }
+                }
+            }
+        });
+
+        touchpad.addEventListener('touchend', (e) => {
+            e.preventDefault(); // Prevent default touch behavior
+            lastTouchX = null;
+            lastTouchY = null;
+            const finalTouchX = e.changedTouches[0].clientX;
+            const finalTouchY = e.changedTouches[0].clientY;
+
+            const deltaX = finalTouchX - firstTouchX;
+            const deltaY = finalTouchY - firstTouchY;
+            const clickTouchThreshold = 10;
+
+            console.log("deltaX:", deltaX, ",deltaY:", deltaY)
+            isClick = Math.abs(deltaX) + Math.abs(deltaY) < clickTouchThreshold;
+            if(isClick){
+                console.log("Short touch: just a click")
+                if(currentTouchpadMode == 'array'){
+                    console.log("Array click")
+                    sendCommand('press', {key:'enter'})
+                }else{
+                    console.log("Literily click")
+                    sendCommand('click', {})
+                }
+            } else {
+                if(currentTouchpadMode == 'array'){
+                    // Determine primary direction of swipe
+                    if (Math.abs(deltaX) > Math.abs(deltaY)) { // Horizontal swipe
+                        if (deltaX > 0) {
+                            sendCommand('press', { key: 'right' });
+                            logMessage('Array Mode: Swiped Right (Arrow Right)', 'info');
+                        } else {
+                            sendCommand('press', { key: 'left' });
+                            logMessage('Array Mode: Swiped Left (Arrow Left)', 'info');
                         }
-                    }else if (currentTouchpadMode == 'scroll'){
-                        // Normalize deltaY to a reasonable scroll amount
-                        if(Math.abs(deltaX) > Math.abs(deltaY)){
-                            const scrollAmount = Math.round(deltaX * scrollSensitivity); 
-                            sendCommand('hscroll', { clicks: -scrollAmount }); // Negative for scroll down (positive deltaY)
-                            logMessage(`Touchpad: Horizontally scrolled ${scrollAmount} clicks (Scroll Mode).`, 'info');
-                        }else{
-                            const scrollAmount = Math.round(deltaY * scrollSensitivity); 
-                            sendCommand('scroll', { clicks: scrollAmount }); // Negative for scroll down (positive deltaY)
-                            logMessage(`Touchpad: Vertibally scrolled ${scrollAmount} clicks (Scroll Mode).`, 'info');
+                    } else { // Vertical swipe
+                        if (deltaY > 0) {
+                            sendCommand('press', { key: 'down' });
+                            logMessage('Array Mode: Swiped Down (Arrow Down)', 'info');
+                        } else {
+                            sendCommand('press', { key: 'up' });
+                            logMessage('Array Mode: Swiped Up (Arrow Up)', 'info');
                         }
                     }
-
+                }else if (currentTouchpadMode == 'scroll'){
+                    // Normalize deltaY to a reasonable scroll amount
+                    if(Math.abs(deltaX) > Math.abs(deltaY)){
+                        const scrollAmount = Math.round(deltaX * scrollSensitivity); 
+                        sendCommand('hscroll', { clicks: -scrollAmount }); // Negative for scroll down (positive deltaY)
+                        logMessage(`Touchpad: Horizontally scrolled ${scrollAmount} clicks (Scroll Mode).`, 'info');
+                    }else{
+                        const scrollAmount = Math.round(deltaY * scrollSensitivity); 
+                        sendCommand('scroll', { clicks: scrollAmount }); // Negative for scroll down (positive deltaY)
+                        logMessage(`Touchpad: Vertibally scrolled ${scrollAmount} clicks (Scroll Mode).`, 'info');
+                    }
                 }
-                touchpad.classList.remove('active'); // Remove visual feedback
-            });
 
-            touchpad.addEventListener('touchcancel', (e) => {
-                e.preventDefault();
-                lastTouchX = null;
-                lastTouchY = null;
-                firstTouchX=null;
-                firstTouchY=null
-                touchpad.classList.remove('active');
-            });
-            // --- END NEW Touchpad Logic ---
-        
+            }
+            touchpad.classList.remove('active'); // Remove visual feedback
+        });
+
+        touchpad.addEventListener('touchcancel', (e) => {
+            e.preventDefault();
+            lastTouchX = null;
+            lastTouchY = null;
+            firstTouchX=null;
+            firstTouchY=null
+            touchpad.classList.remove('active');
+        });
+        // --- END NEW Touchpad Logic ---
+    
     </script>
 </body>
 </html>
