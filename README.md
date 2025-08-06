@@ -1,5 +1,7 @@
-# hands-free-mouse
-Input without any traditional device, like keyboard\mouse etc. Just on your phone only one hand. So, it's not literily hands-free, but it's really helpful when you need hold your baby in your arms👨‍🍼.
+# hands-free-input
+> Input without any traditional device, like keyboard\mouse etc. Just on your phone only one hand. So, it's not literily hands-free, but it's really helpful when you need hold your baby in your arms👨‍🍼.
+
+> I'd like watching [Youtube](https://www.youtube.com/) and [Bilibili](https://www.bilibili.com/) on my home theater system, so I added so many Youtube/Bilibili shortcut buttons on the client page. You can change or remove those buttons on the client/remote_client.html page if you like.
 
 ## Requirements
 ### System
