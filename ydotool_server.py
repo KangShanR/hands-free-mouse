@@ -199,7 +199,7 @@ async def handle_message(websocket):
                     y = args.get('y', 0)
                     # ydotool mousemove takes absolute or relative coordinates.
                     # We are using relative moves, so add --relative flag
-                    execute_ydotool_command(['mousemove', '--relative', str(x), str(y)])
+                    execute_ydotool_command(['mousemove', '--relative', '-x', str(x), '-y', str(y)])
                     response["message"] = f"Moved mouse by ({x}, {y})"
                 elif command == 'click':
                     # ydotool click takes button number (1 for left, 2 for right, 3 for middle)
