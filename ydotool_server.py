@@ -90,12 +90,14 @@ KEY_MAPPING = {
     'bracketleft': '26',
     'bracketright': '27',
     'backslash': '43',
+    '\\': '43',
     'semicolon': '39',
     'apostrophe': '40',
     'grave': '41',
     'comma': '51',
     'period': '52',
     'slash': '53',
+    '/': '53',
 
     # Numpad Keys
     'numpad0': '82', 'numpad1': '79', 'numpad2': '80', 'numpad3': '81',
