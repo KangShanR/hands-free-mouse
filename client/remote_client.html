@@ -307,10 +307,6 @@
         <hr>
         <div class="input-group">
             <div class="input-fields">
-                <button onclick="sendCommand('hotkey', {keys: ['shift', 'n']})">⏭</button>
-                <button onclick="sendCommand('hotkey', {keys: ['shift', 'p']})">⏮</button>
-            </div>
-            <div class="input-fields">
                 <button onclick="sendCommand('press', {key: '/'})">/</button>
                 <button onclick="sendCommand('press', {key: 'i'})">I</button>
             </div>
@@ -325,6 +321,18 @@
         </div>
         <hr>
         
+        <div class="input-group">
+            <div class="input-fields">
+                <button onclick="sendCommand('press', {key: 'volumeup'})">🔊</button>
+                <button onclick="sendCommand('press', {key: 'volumedown'})">🔈</button>
+            </div>
+            <div class="input-fields">
+                <button onclick="sendCommand('press', {key: 'prevtrack'})">⏮</button>
+                <button onclick="sendCommand('press', {key: 'playpause'})">⏯</button>
+                <button onclick="sendCommand('press', {key: 'nexttrack'})">⏭</button>
+            </div>
+        </div>
+        <hr>
         <div class="input-group">
             <div class="input-fields">
                 <button onclick="sendCommand('press', {key: 'win'})">Win</button>
