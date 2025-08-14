@@ -210,11 +210,41 @@ async def handle_message(websocket):
                 elif command == 'scroll':
                     clicks = args.get('clicks', 0)
                     # For scroll, we can map to mouse wheel commands
+                    # Scroll up
                     if clicks > 0:
-                        execute_ydotool_command(['click', 'C3']) # Scroll up
+                        code = KEY_MAPPING.get('up')
+                        codes = [f'{code}:1', f'{code}:0']
+                        execute_ydotool_command(['key'] + [item for _ in range(clicks) for item in codes])
+                        response["message"] = f"Scrolled by {clicks} clicks"
+                    # Scroll down
                     elif clicks < 0:
-                        execute_ydotool_command(['click', 'C4']) # Scroll down
-                    response["message"] = f"Scrolled by {clicks} clicks"
+                        code = KEY_MAPPING.get('down')
+                        codes = [f'{code}:1', f'{code}:0']
+                        execute_ydotool_command(['key'] + [item for _ in range(-clicks) for item in codes])
+                        response["message"] = f"Scrolled by {clicks} clicks"
+                    else:
+                        button = 'C0'
+                        execute_ydotool_command(['click', button])
+                        response["message"] = "It's a click, not a scroll."
+                elif command == 'hscroll':
+                    clicks = args.get('clicks', 0)
+                    # For scroll, we can map to mouse wheel commands
+                    # Scroll right
+                    if clicks > 0:
+                        code = KEY_MAPPING.get('right')
+                        codes = [f'{code}:1', f'{code}:0']
+                        execute_ydotool_command(['key'] + [item for _ in range(clicks) for item in codes])
+                        response["message"] = f"Scrolled by {clicks} clicks"
+                    # Scroll left
+                    elif clicks < 0:
+                        code = KEY_MAPPING.get('left')
+                        codes = [f'{code}:1', f'{code}:0']
+                        execute_ydotool_command(['key'] + [item for _ in range(-clicks) for item in codes])
+                        response["message"] = f"Scrolled by {clicks} clicks"
+                    else:
+                        button = 'C0'
+                        execute_ydotool_command(['click', button])
+                        response["message"] = "It's a click, not a scroll."
                 elif command == 'exec':
                     # This command is system-specific and doesn't change with ydotool
                     cmd_to_exec = args.get('command')
