@@ -162,10 +162,11 @@ async def handle_message(websocket):
                         response["message"] = "Key not specified for 'press' command."
                 elif command == 'hotkey':
                     keys = args.get('keys', [])
-                    if keys:
+                    codes = [KEY_MAPPING.get(key.lower()) for key in keys] 
+                    if codes and all(codes):
                         # Build the keydown/keyup sequence for the hotkey
-                        keydown_commands = [f'{k}:1' for k in keys]
-                        keyup_commands = [f'{k}:0' for k in reversed(keys)] # Release in reverse order
+                        keydown_commands = [f'{k}:1' for k in codes]
+                        keyup_commands = [f'{k}:0' for k in reversed(codes)] # Release in reverse order
                         execute_ydotool_command(['key'] + keydown_commands + keyup_commands)
                         response["message"] = f"Pressed hotkey combination: {keys}"
                     else:
