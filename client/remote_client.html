@@ -243,7 +243,7 @@
         
         <div class="input-group">
             <div class="input-fields">
-                <button onclick="sendCommand('open_terminal_and_exec', {command: 'rkodi'})">🎬</button>
+                <button onclick="sendCommand('exec', {command: 'nohup flatpak run tv.kodi.Kodi > /dev/null 2>&1 &'})">🎬</button>
             </div>
             <div class="input-fields">
                 <button  onclick="sendCommand('hotkey', {keys: ['ctrl', 'a']})">All</button>

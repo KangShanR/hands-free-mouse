@@ -250,7 +250,7 @@ async def handle_message(websocket):
                     cmd_to_exec = args.get('command')
                     if cmd_to_exec:
                         if os.name == 'posix':  # macOS/Linux
-                            subprocess.run([cmd_to_exec])
+                            subprocess.run(cmd_to_exec, check=True, shell=True)
                             # subprocess.run([shlex.quote(cmd_to_exec)])
                         else:
                             response["status"] = "error"
