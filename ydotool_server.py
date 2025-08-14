@@ -176,18 +176,20 @@ async def handle_message(websocket):
                         response["message"] = "Keys not specified for 'hotkey' command."
                 elif command == 'keydown':
                     key = args.get('key')
-                    if key:
-                        execute_ydotool_command(['key', f'{key}:1'])
-                        response["message"] = f"Key down: {key}"
+                    code = KEY_MAPPING.get(key)
+                    if key and code:
+                        execute_ydotool_command(['key', f'{code}:1'])
+                        response["message"] = f"Key down: {key}, code:{code}"
                         response["key"] = key
                     else:
                         response["status"] = "error"
                         response["message"] = "Key not specified for 'keydown' command."
                 elif command == 'keyup':
                     key = args.get('key')
-                    if key:
-                        execute_ydotool_command(['key', f'{key}:0'])
-                        response["message"] = f"Key up: {key}"
+                    code = KEY_MAPPING.get(key)
+                    if key and code:
+                        execute_ydotool_command(['key', f'{code}:0'])
+                        response["message"] = f"Key up: {key}, code:{code}"
                         response["key"] = key
                     else:
                         response["status"] = "error"
