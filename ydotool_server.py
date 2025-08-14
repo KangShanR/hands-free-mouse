@@ -203,8 +203,8 @@ async def handle_message(websocket):
                     response["message"] = f"Moved mouse by ({x}, {y})"
                 elif command == 'click':
                     # ydotool click takes button number (1 for left, 2 for right, 3 for middle)
-                    button_map = {'left': '1', 'right': '2', 'middle': '3'}
-                    button = button_map.get(args.get('button', 'left'), '1')
+                    button_map = {'left': 'C0', 'right': 'C1', 'middle': 'C'}
+                    button = button_map.get(args.get('button', 'left'), 'C0')
                     execute_ydotool_command(['click', button])
                     response["message"] = f"Clicked with button '{args.get('button', 'left')}'"
                 elif command == 'scroll':
