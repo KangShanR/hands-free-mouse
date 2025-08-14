@@ -4,6 +4,7 @@ import websockets
 import subprocess
 import shlex
 import os
+import logging
 
 # Set a variable for the ydotool command prefix.
 # This makes the code cleaner and easier to read.
@@ -35,6 +36,81 @@ YDOTool_CHAR_MAP = {
     '~': ['shift', 'grave'],
 }
 
+# ydotool uses Linux kernel event codes.
+# This mapping converts common key names to their corresponding codes.
+KEY_MAPPING = {
+    # Alphanumeric Keys
+    'a': '30', 'b': '48', 'c': '46', 'd': '32', 'e': '18',
+    'f': '33', 'g': '34', 'h': '35', 'i': '23', 'j': '36',
+    'k': '37', 'l': '38', 'm': '50', 'n': '49', 'o': '24',
+    'p': '25', 'q': '16', 'r': '19', 's': '31', 't': '20',
+    'u': '22', 'v': '47', 'w': '17', 'x': '45', 'y': '21',
+    'z': '44',
+
+    # Number Keys (top row)
+    '1': '2', '2': '3', '3': '4', '4': '5', '5': '6',
+    '6': '7', '7': '8', '8': '9', '9': '10', '0': '11',
+
+    # Function Keys
+    'f1': '59', 'f2': '60', 'f3': '61', 'f4': '62', 'f5': '63',
+    'f6': '64', 'f7': '65', 'f8': '66', 'f9': '67', 'f10': '68',
+    'f11': '87', 'f12': '88',
+
+    # Modifier Keys (Note: use these for hotkeys, not simple presses)
+    'shift': '42', 'ctrl': '29', 'alt': '56', 'win': '125', 
+    'meta': '125', # Alias for 'win' or 'super' key
+
+    # Navigation and Special Keys
+    'enter': '28', 'return': '28',
+    'esc': '1', 'escape': '1',
+    'backspace': '14',
+    'tab': '15',
+    'space': '57',
+    'capslock': '58',
+    'delete': '111',
+    'insert': '110',
+    'home': '102',
+    'end': '107',
+    'pageup': '104',
+    'pagedown': '109',
+    'printscreen': '99',
+    'pause': '119',
+
+    # Arrow Keys
+    'up': '103',
+    'down': '108',
+    'left': '105',
+    'right': '106',
+
+    # Punctuation and Symbols (Common QWERTY layout)
+    # ydotool also needs a mapping for the shift versions.
+    # We will handle these with the YDOTool_CHAR_MAP for 'type' command.
+    'minus': '12',
+    'equal': '13',
+    'bracketleft': '26',
+    'bracketright': '27',
+    'backslash': '43',
+    'semicolon': '39',
+    'apostrophe': '40',
+    'grave': '41',
+    'comma': '51',
+    'period': '52',
+    'slash': '53',
+
+    # Numpad Keys
+    'numpad0': '82', 'numpad1': '79', 'numpad2': '80', 'numpad3': '81',
+    'numpad4': '75', 'numpad5': '76', 'numpad6': '77', 'numpad7': '71',
+    'numpad8': '72', 'numpad9': '73',
+    'numlock': '69',
+    'numpad_slash': '98', 'numpad_star': '55', 'numpad_minus': '74',
+    'numpad_plus': '78', 'numpad_enter': '96', 'numpad_dot': '83',
+
+    # Media Keys
+    'volumemute': '113', 'volumeup': '115', 'volumedown': '114',
+    'playpause': '164', 'stop': '166',
+    'prevtrack': '165', 'nexttrack': '163',
+}
+
 def execute_ydotool_command(args):
     """
     Executes a ydotool command using subprocess.
@@ -49,7 +125,7 @@ def execute_ydotool_command(args):
         print(f"Error executing ydotool command: {e.stderr.decode()}")
         raise
 
-async def handle_message(websocket, path):
+async def handle_message(websocket):
     print(f"Client connected from {websocket.remote_address}")
     try:
         async for message in websocket:
@@ -68,18 +144,19 @@ async def handle_message(websocket, path):
                     for char in text_to_type:
                         if char in YDOTool_CHAR_MAP:
                             hotkey_args = YDOTool_CHAR_MAP[char]
-                            execute_ydotool_command(['key'] + [f'{k}+' for k in hotkey_args] + [f'{k}-' for k in hotkey_args])
+                            execute_ydotool_command(['type'] + [f'{k}+' for k in hotkey_args] + [f'{k}-' for k in hotkey_args])
                         else:
                             # Use key command for single characters
-                            execute_ydotool_command(['key', char])
+                            execute_ydotool_command(['type', char])
                     response["message"] = f"Typed text: '{text_to_type}'"
                 elif command == 'press':
                     key = args.get('key')
-                    if key:
+                    code = KEY_MAPPING[key]
+                    if code:
                         # ydotool uses different key names, map common ones if needed
                         # For simplicity, we'll assume the front-end sends ydotool-compatible names
-                        execute_ydotool_command(['key', f'{key}:1', f'{key}:0'])
-                        response["message"] = f"Pressed key: {key}"
+                        execute_ydotool_command(['key', f'{code}:1', f'{code}:0'])
+                        response["message"] = f"Pressed key: {key}, code: {code}"
                     else:
                         response["status"] = "error"
                         response["message"] = "Key not specified for 'press' command."
@@ -164,8 +241,24 @@ async def handle_message(websocket, path):
     finally:
         print("Handler finished.")
 
-start_server = websockets.serve(handle_message, "0.0.0.0", 8765)
 
-print("Starting WebSocket server on ws://0.0.0.0:8765")
-asyncio.get_event_loop().run_until_complete(start_server)
-asyncio.get_event_loop().run_forever()
+
+async def start_websocket_server():
+    """启动 WebSocket 服务器，监听并处理连接"""
+    logging.warning("WARNING: This server allows network control of your mouse and keyboard.")
+    logging.warning("Ensure you understand the security implications before proceeding.")
+
+    # start_server = websockets.serve(handle_message, "192.168.8.129", 9999)
+    # print("Starting WebSocket server on ws://192.168.8.129:9999")
+    # asyncio.get_event_loop().run_until_complete(start_server)
+    # asyncio.get_event_loop().run_forever()
+    # 启动 WebSocket 服务器，绑定到指定 IP 和端口
+    async with websockets.serve(handle_message, "192.168.8.129", 9999):
+        # logging.info(f"PyAutoGUI WebSocket server listening on ws://{HOST}:{PORT}")
+        logging.info(f"PyAutoGUI WebSocket server listening on ws://192.168:8888")
+        # 保持服务器运行，直到程序被外部中断 (例如 Ctrl+C)
+        await asyncio.Future() 
+
+if __name__ == "__main__":
+    # 使用 asyncio 运行 WebSocket 服务器
+    asyncio.run(start_websocket_server())
