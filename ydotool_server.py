@@ -154,7 +154,7 @@ async def handle_message(websocket):
                 elif command == 'press':
                     key = args.get('key')
                     code = KEY_MAPPING[key]
-                    if code:
+                    if key and code:
                         # ydotool uses different key names, map common ones if needed
                         # For simplicity, we'll assume the front-end sends ydotool-compatible names
                         execute_ydotool_command(['key', f'{code}:1', f'{code}:0'])
@@ -199,11 +199,11 @@ async def handle_message(websocket):
                     y = args.get('y', 0)
                     # ydotool mousemove takes absolute or relative coordinates.
                     # We are using relative moves, so add --relative flag
-                    execute_ydotool_command(['mousemove', '--relative', '-x', str(x), '-y', str(y)])
+                    execute_ydotool_command(['mousemove', '-x', str(x), '-y', str(y)])
                     response["message"] = f"Moved mouse by ({x}, {y})"
                 elif command == 'click':
                     # ydotool click takes button number (1 for left, 2 for right, 3 for middle)
-                    button_map = {'left': 'C0', 'right': 'C1', 'middle': 'C'}
+                    button_map = {'left': 'C0', 'right': 'C1', 'middle': 'C2'}
                     button = button_map.get(args.get('button', 'left'), 'C0')
                     execute_ydotool_command(['click', button])
                     response["message"] = f"Clicked with button '{args.get('button', 'left')}'"
@@ -211,20 +211,21 @@ async def handle_message(websocket):
                     clicks = args.get('clicks', 0)
                     # For scroll, we can map to mouse wheel commands
                     if clicks > 0:
-                        execute_ydotool_command(['click', '4']) # Scroll up
+                        execute_ydotool_command(['click', 'C3']) # Scroll up
                     elif clicks < 0:
-                        execute_ydotool_command(['click', '5']) # Scroll down
+                        execute_ydotool_command(['click', 'C4']) # Scroll down
                     response["message"] = f"Scrolled by {clicks} clicks"
-                elif command == 'open_terminal_and_exec':
+                elif command == 'exec':
                     # This command is system-specific and doesn't change with ydotool
                     cmd_to_exec = args.get('command')
                     if cmd_to_exec:
                         if os.name == 'posix':  # macOS/Linux
-                            subprocess.Popen(['xterm', '-e', shlex.quote(cmd_to_exec)])
+                            subprocess.run([cmd_to_exec])
+                            # subprocess.run([shlex.quote(cmd_to_exec)])
                         else:
                             response["status"] = "error"
                             response["message"] = "This command is only supported on Linux/macOS."
-                        response["message"] = f"Opened terminal and executed: {cmd_to_exec}"
+                        response["message"] = f"Executed: {cmd_to_exec}"
                     else:
                         response["status"] = "error"
                         response["message"] = "Command not specified."
