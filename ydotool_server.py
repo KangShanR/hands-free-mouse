@@ -5,6 +5,7 @@ import subprocess
 import shlex
 import os
 import logging
+import traceback
 
 # Set a variable for the ydotool command prefix.
 # This makes the code cleaner and easier to read.
@@ -145,16 +146,18 @@ async def handle_message(websocket):
                     # Let's use a hybrid approach to be safe
                     for char in text_to_type:
                         if char in YDOTool_CHAR_MAP:
-                            hotkey_args = YDOTool_CHAR_MAP[char]
-                            execute_ydotool_command(['type'] + [f'{k}+' for k in hotkey_args] + [f'{k}-' for k in hotkey_args])
+                            execute_ydotool_command(['type', char])
                         else:
                             # Use key command for single characters
                             execute_ydotool_command(['type', char])
                     response["message"] = f"Typed text: '{text_to_type}'"
                 elif command == 'press':
                     key = args.get('key')
-                    code = KEY_MAPPING[key]
-                    if key and code:
+                    if key and key in YDOTool_CHAR_MAP:
+                        execute_ydotool_command(['type', key])
+                        response["message"] = f"Pressed key: {key}"
+                    elif key and key in KEY_MAPPING:
+                        code = KEY_MAPPING[key]
                         # ydotool uses different key names, map common ones if needed
                         # For simplicity, we'll assume the front-end sends ydotool-compatible names
                         execute_ydotool_command(['key', f'{code}:1', f'{code}:0'])
@@ -270,6 +273,7 @@ async def handle_message(websocket):
                 await websocket.send(json.dumps({"status": "error", "message": "Invalid JSON format."}))
             except Exception as e:
                 print(f"An error occurred: {e}")
+                traceback.print_exc()
                 await websocket.send(json.dumps({"status": "error", "message": str(e)}))
 
     except websockets.exceptions.ConnectionClosed:
