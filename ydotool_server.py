@@ -251,9 +251,12 @@ async def handle_message(websocket):
                 elif command == 'exec':
                     # This command is system-specific and doesn't change with ydotool
                     cmd_to_exec = args.get('command')
+                    print(f"command:{cmd_to_exec}")
                     if cmd_to_exec:
                         if os.name == 'posix':  # macOS/Linux
-                            subprocess.run(cmd_to_exec, check=True, shell=True)
+                            display_env = os.environ.copy()
+                            display_env['DISPLAY'] = ':0'
+                            subprocess.run(cmd_to_exec, check=True, shell=True, env=display_env)
                             # subprocess.run([shlex.quote(cmd_to_exec)])
                         else:
                             response["status"] = "error"
