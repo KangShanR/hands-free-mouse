@@ -28,13 +28,15 @@ YDOTool_CHAR_MAP = {
     '(': ['shift', '9'],
     ')': ['shift', '0'],
     '_': ['shift', 'minus'],
-    '+': ['shift', 'equal'],
     '{': ['shift', 'bracketleft'],
     '}': ['shift', 'bracketright'],
     '|': ['shift', 'backslash'],
     ':': ['shift', 'semicolon'],
     '?': ['shift', 'slash'],
     '~': ['shift', 'grave'],
+
+    # the special sambols need the shift(code:42) key
+    '+': ['42', '13'],
 }
 
 # ydotool uses Linux kernel event codes.
@@ -87,16 +89,24 @@ KEY_MAPPING = {
     # ydotool also needs a mapping for the shift versions.
     # We will handle these with the YDOTool_CHAR_MAP for 'type' command.
     'minus': '12',
+    '-': '12',
     'equal': '13',
+    '=': '13',
     'bracketleft': '26',
+    '[': '26',
     'bracketright': '27',
+    ']': '27',
     'backslash': '43',
     '\\': '43',
     'semicolon': '39',
+    ';': '39',
     'apostrophe': '40',
+    '\'': '40',
     'grave': '41',
     'comma': '51',
+    ',': '51',
     'period': '52',
+    '.': '52',
     'slash': '53',
     '/': '53',
 
@@ -106,12 +116,14 @@ KEY_MAPPING = {
     'numpad8': '72', 'numpad9': '73',
     'numlock': '69',
     'numpad_slash': '98', 'numpad_star': '55', 'numpad_minus': '74',
-    'numpad_plus': '78', 'numpad_enter': '96', 'numpad_dot': '83',
+    'numpad_plus': '78',
+    'numpad_enter': '96', 'numpad_dot': '83',
 
     # Media Keys
     'volumemute': '113', 'volumeup': '115', 'volumedown': '114',
     'playpause': '164', 'stop': '166',
     'prevtrack': '165', 'nexttrack': '163',
+    
 }
 
 def execute_ydotool_command(args):
@@ -145,11 +157,8 @@ async def handle_message(websocket):
                     # Ydotool type command handles special characters directly, but hotkey mapping is more reliable for some
                     # Let's use a hybrid approach to be safe
                     for char in text_to_type:
-                        if char in YDOTool_CHAR_MAP:
-                            execute_ydotool_command(['type', char])
-                        else:
-                            # Use key command for single characters
-                            execute_ydotool_command(['type', char])
+                        # Use key command for single characters
+                        execute_ydotool_command(['type', char])
                     response["message"] = f"Typed text: '{text_to_type}'"
                 elif command == 'press':
                     key = args.get('key')
